@@ -22,7 +22,7 @@ class PostSeeder extends Seeder
             $post->user_id = $faker->randomElement($userIds);
             $post->title = $faker->unique->realTextBetween(5, 30);
             $post->date = $faker->date();
-            $post->descriptiom = $faker->unique->realTextBetween(40, 80);
+            $post->description = $faker->unique->realTextBetween(40, 80);
             $post->content = $faker->realTextBetween(350, 800);
             $post->save();
         }
