@@ -2,22 +2,26 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Faker\Generator as Faker;
 
-class CategorySeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(Faker $faker): void
     {
+
         for ($i=0; $i<10; $i++) {
-            $category = new Category();
-            $category->name = $faker->word();
-            $category->save();
+            $user = new User();
+            $user->name = $faker->name();
+            $user->email = $faker->email();
+            $user->password = Hash::make($faker->password());
+            $user->save();
         }
     }
 }
