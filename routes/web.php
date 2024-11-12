@@ -26,7 +26,7 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Rotte per i posts
-Route::resource('posts', PostController::class);
+Route::middleware('auth')->resource('posts', PostController::class);
 
 // Rotte per le categorie
-Route::resource('categories', CategoryController::class);
+Route::middleware('auth')->resource('categories', CategoryController::class);
