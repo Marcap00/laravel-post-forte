@@ -5,11 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,7 +30,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view("posts.create");
+        $post = new Post();
+        $categories = Category::all();
+        return view("posts.create", compact("post", "categories"));
     }
 
     /**
@@ -32,7 +41,16 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         $data = $request->validate();
+        $data["user_id"] = Auth::id();
         $post = Post::create($data);
+
+        if (isset($data["categories"])) {
+            $post->categories()->sync($data["categories"]);
+        } else {
+            $post->categories()->detach();
+        }
+
+
         return redirect()->route("posts.show", ["id" => $post->id]);
     }
 
@@ -47,21 +65,27 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
-        $post = Post::findOrFail($id);
-        return view('posts.edit', compact('pokemon'));
+        $categories = Category::all();
+        return view('posts.edit', compact('post', "categories"));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, string $id)
+    public function update(UpdatePostRequest $request, Post $post)
     {
 
-        $data = $request->validate();
-        $post = Post::findOrFail($id);
+        $data = $request->validated();
         $post->update($data);
+
+        if (isset($data["categories"])) {
+            $post->categories()->sync($data["categories"]);
+        } else {
+            $post->categories()->detach();
+        }
+
         return redirect()->route("posts.show", ["id" => $post->id]);
     }
 
@@ -71,10 +95,5 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function __construct()
-    {
-        $this->middleware('auth');
     }
 }
